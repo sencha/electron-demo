@@ -1,0 +1,26 @@
+{
+  "name": "ext-electron",
+  "version": "1.0.0",
+  "description": "Ext JS / Electron demo workspace",
+  "main": "index.js",
+  "scripts": {
+    "app": "electron app"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dongryphon/ext-electron.git"
+  },
+  "keywords": [
+    "extjs",
+    "electron"
+  ],
+  "author": "Sencha",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dongryphon/ext-electron/issues"
+  },
+  "homepage": "https://github.com/dongryphon/ext-electron#readme",
+  "devDependencies": {
+    "electron": "^1.4.4"
+  }
+}

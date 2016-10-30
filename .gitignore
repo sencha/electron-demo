@@ -1,0 +1,6 @@
+/.idea
+/ext
+/build
+.sencha
+node_modules
+bootstrap.json*

@@ -1,0 +1,11 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "My app",
+  "main": "main.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "Sencha",
+  "license": "ISC"
+}
