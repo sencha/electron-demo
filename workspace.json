@@ -31,7 +31,6 @@
     "frameworks": {
         "ext": {
             "path":"ext",
-            "package":"ext@6.2.0.981",
             "version":"6.2.0.981"
         }
     },
