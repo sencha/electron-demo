@@ -43,10 +43,9 @@ at the root directory:
 
 ## Build The App
 
-To build the application, do the following:
+To build the application, do the following at the root directory:
 
-    $ cd app
-    $ sencha app build --dev
+    $ sencha -cwd app app build --dev
 
 ## Run
 
