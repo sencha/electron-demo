@@ -2163,7 +2163,13 @@ Ext.Microloader = Ext.Microloader || (function () {
                 Microloader.urls = [];
                 Microloader.manifest = manifest;
                 Ext.manifest = Microloader.manifest.exportContent();
-
+                var progressive = Ext.manifest.progressive;
+                if (progressive && progressive.serviceWorker) {
+                    if ('serviceWorker' in navigator) {
+                        navigator.serviceWorker.register('./' + progressive.serviceWorker);
+                    }
+                }
+                
                 var assets = manifest.getAssets(),
                     cachedAssets = [],
                     asset, i, len, include, entry;
