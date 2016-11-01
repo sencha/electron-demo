@@ -6,8 +6,10 @@
   "scripts": {
     "app": "electron app",
     "build-dev": "sencha --cwd app app build --dev",
-    "build-prod": "sencha --cwd app app build --clean --production",
-    "clean": "rm -rf ext; rm -rf .sencha; rm -rf app/.sencha; rm -rf node_modules; rm -rf app/node_modules"
+    "build-prod": "sencha --cwd app build --clean --production",
+    "clean": "rm -rf ext; rm -rf .sencha; rm -rf app/.sencha; rm -rf node_modules; rm -rf app/node_modules",
+    "setup": "pushd app && yarn install && popd && yarn install",
+    "bundle-all": "electron-packager app App --all --out build/electron"
   },
   "repository": {
     "type": "git",
@@ -24,6 +26,7 @@
   },
   "homepage": "https://github.com/dongryphon/ext-electron#readme",
   "devDependencies": {
-    "electron": "^1.4.4"
+    "electron": "^1.4.4",
+    "electron-packager": "^8.2.0"
   }
 }
