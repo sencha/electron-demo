@@ -5,15 +5,18 @@
     "main": "index.js",
     "scripts": {
         "app": "electron app",
+        
         "build-dev": "sencha --cwd app app build --dev",
-        "build-prod": "sencha --cwd app build --clean --production",
-        "clean": "rm -rf ext; rm -rf .sencha; rm -rf app/.sencha; rm -rf node_modules; rm -rf app/node_modules",
-        "bundle-all": "sencha --cwd app build --clean --production && electron-packager app/build/production App --all --out build/electron",
-        "bundle-win32": "sencha --cwd app build --clean --production && electron-packager app/build/production App --platlform=windows --arch=32 --out build/electron",
-        "bundle-win64": "sencha --cwd app build --clean --production && electron-packager app/build/production App --platlform=windows --arch=64 --out build/electron",
-        "bundle-osx": "sencha --cwd app build --clean --production && electron-packager app/build/production App --platform=osx --out build/electron",
-        "bundle-linux32": "sencha --cwd app build --clean --production && electron-packager app/build/production App --platlform=linux --arch=x86 --out build/electron",
-        "bundle-linux64": "sencha --cwd app build --clean --production && electron-packager app/build/production App --platlform=linux --arch=x86_64 --out build/electron"
+        "build-prod": "sencha --cwd app app build --clean --production",
+        
+        "bundle-all":     "sencha --cwd app app build --clean --production && electron-packager app/build/production App --all --out build/electron",
+        "bundle-win32":   "sencha --cwd app app build --clean --production && electron-packager app/build/production App --platlform=windows --arch=32 --out build/electron",
+        "bundle-win64":   "sencha --cwd app app build --clean --production && electron-packager app/build/production App --platlform=windows --arch=64 --out build/electron",
+        "bundle-osx":     "sencha --cwd app app build --clean --production && electron-packager app/build/production App --platform=osx --out build/electron",
+        "bundle-linux32": "sencha --cwd app app build --clean --production && electron-packager app/build/production App --platlform=linux --arch=x86 --out build/electron",
+        "bundle-linux64": "sencha --cwd app app build --clean --production && electron-packager app/build/production App --platlform=linux --arch=x86_64 --out build/electron",
+        
+        "clean": "rm -rf ext; rm -rf .sencha; rm -rf app/.sencha; rm -rf node_modules; rm -rf app/node_modules; rm -rf build"
     },
     "repository": {
         "type": "git",
