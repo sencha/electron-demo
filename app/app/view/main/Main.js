@@ -15,7 +15,9 @@ Ext.define('App.view.main.Main', {
 
         'App.view.main.MainController',
         'App.view.main.MainModel',
-        'App.view.main.List'
+        'App.view.main.List',
+
+        'Ext.electron.form.FieldPicker'
     ],
 
     controller: 'main',
@@ -85,6 +87,24 @@ Ext.define('App.view.main.Main', {
     }, {
         title: 'Users',
         iconCls: 'fa-user',
+
+        tbar: [{
+            xtype: 'electronfilefield',
+            reference: 'filepicker',
+            options: {
+                filters: [
+                    {name: 'Images', extensions: ['jpg', 'png', 'gif']},
+                    {name: 'All Files', extensions: ['*']}
+                ]
+            },
+            listeners: {
+                change: 'onFileChange'
+            }
+        }, {
+            text: 'SHA-256',
+            handler: 'onHash'
+        }],
+
         bind: {
             html: '{loremIpsum}'
         }

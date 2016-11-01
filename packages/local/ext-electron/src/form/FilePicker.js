@@ -54,7 +54,7 @@ return {
         options: {
             title: 'Select File',
             properties: [
-                'openDirectory'
+                'openFile'
             ]
         },
 
