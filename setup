@@ -1,1 +1,43 @@
 #!bin/bash
+
+PM=yarn;
+D=$EXTJS_HOME;
+
+if [ -z $D ] 
+then
+    if [ -n $1 ]
+    then
+        D=$1;
+    fi
+fi
+
+if [ -z $D ]
+then
+    echo "Specify path to Ext JS framework or set EXTJS_HOME"
+    echo "This folder can either be an extracted version of"
+    echo "Ext JS or a folder with many extracted versions."
+    echo ""
+    echo "Example:"
+    echo ""
+    echo "   setup C:\Downloads\Sencha"
+    exit 1
+fi
+
+
+echo "===================================================="
+echo "Installing Ext JS and preparing app"
+
+sencha workspace install -f $D
+echo "===================================================="
+echo "Installing Node packages"
+
+pushd app
+$PM install
+popd
+
+$PM install
+
+echo "===================================================="
+echo "Perform initial development build"
+
+sencha --cwd app app build --dev
