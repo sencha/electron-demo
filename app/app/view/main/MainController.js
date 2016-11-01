@@ -9,13 +9,14 @@ Ext.define('App.view.main.MainController', {
 
     alias: 'controller.main',
 
-    onItemSelected: function (sender, record) {
-        Ext.Msg.confirm('Confirm', 'Are you sure?', 'onConfirm', this);
+    onFileChange (picker, path) {
+        console.log(`File is ${path}`);
     },
 
-    onConfirm: function (choice) {
-        if (choice === 'yes') {
-            //
-        }
+    onHash () {
+        let picker = this.lookup('filepicker');
+        let path = picket.getValue();
+
+        console.log(`Hash ${path}`);
     }
 });

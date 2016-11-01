@@ -6,7 +6,7 @@
   "scripts": {
     "app": "electron app",
     "build-dev": "sencha --cwd app app build --dev",
-    "build-prod": "sencha --cwd app build --clean --production",
+    "build-prod": "sencha --cwd app app build --clean --production",
     "clean": "rm -rf ext; rm -rf .sencha; rm -rf app/.sencha; rm -rf node_modules; rm -rf app/node_modules"
   },
   "repository": {

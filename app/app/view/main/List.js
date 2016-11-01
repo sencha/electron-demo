@@ -6,8 +6,7 @@ Ext.define('App.view.main.List', {
     xtype: 'mainlist',
 
     requires: [
-        'App.store.Personnel',
-        'Ext.electron.form.FieldPicker'
+        'App.store.Personnel'
     ],
 
     title: 'Personnel',
@@ -15,10 +14,6 @@ Ext.define('App.view.main.List', {
     store: {
         type: 'personnel'
     },
-
-    tbar: [{
-        xtype: 'electronfilefield'
-    }],
 
     columns: [
         { text: 'Name',  dataIndex: 'name' },
