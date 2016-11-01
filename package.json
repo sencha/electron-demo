@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dongryphon/ext-electron.git"
+    "url": "git@github.com:sencha/ext-electron.git"
   },
   "keywords": [
     "extjs",
