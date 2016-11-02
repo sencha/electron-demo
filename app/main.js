@@ -1,17 +1,48 @@
 const { app, BrowserWindow } = require('electron');
 const mainStub = require('./main/mainStub.js');
 
+const Path = require('path');
+const os = require('os');
+const fs = require('fs');
+
 mainStub.setFoo(42, process.type);
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win;
+let windowBox;
+let syncTimer;
+
+
+let profileDir = (function () {
+    var ret = os.homedir();
+
+    switch (os.platform()) {
+        case 'win32':
+            return Path.join(process.env.USERPROFILE, '.sencha');
+
+        case 'darwin':
+            return Path.join(ret, 'Library/Application Support/Sencha');
+
+        case 'linux':
+            return Path.join(ret, '.local/share/data/Sencha');
+    }
+
+    return Path.join(ret, '.sencha');
+})();
+
 
 function createWindow () {
+
+    var initData = readObject('App.windowBox.json');
+    
     // Create the browser window.
     win = new BrowserWindow({
-        width: 1200,
-        height: 900
+        width: initData.width || 1200,
+        height: initData.height || 900,
+        x: initData.x,
+        y: initData.y,
+        maximized: initData.maximized
     });
 
     // and load the index.html of the app.
@@ -32,17 +63,42 @@ function createWindow () {
 
     win.on('move', trackWindow);
     win.on('resize', trackWindow);
+    trackWindow();
 }
 
-let windowBox;
-let syncTimer;
+function readObject(name) {
+    var obj = {};
+    var path = Path.join(profileDir, name);
+    if (fs.existsSync(path)) {
+        try {
+            var data = fs.readFileSync(path, 'utf8');
+            if (data) {
+                obj = JSON.parse(data);
+            }
+        }
+        catch (ignore) {
+            
+        }
+    }
+    return obj;
+}
+
+function saveObject(obj, name) {
+    var data = JSON.stringify(obj, null, '  ');
+    var path = Path.join(profileDir, name);
+    if (!fs.existsSync(Path.dirname(path))) {
+        fs.mkdirSync(POath.dirname(path));
+    }
+    fs.writeFileSync(path, data);
+}
+
 
 function flushWindowState () {
     if (syncTimer) {
         clearTimeout(syncTimer);
         syncTimer = null;
     }
-    //TODO
+    saveObject(windowBox, 'App.windowBox.json');
 }
 
 function trackWindow () {
@@ -51,7 +107,7 @@ function trackWindow () {
     if (win.isMaximized()) {
         bounds = { maximized: true };
     } else {
-        bounds = this.mainWindow.getBounds();
+        bounds = win.getBounds();
         bounds.maximized = false;
     }
 
@@ -61,7 +117,7 @@ function trackWindow () {
         syncTimer = setTimeout(() => {
             syncTimer = null;
             flushWindowState();
-        });
+        }, 250);
     }
 }
 
@@ -84,5 +140,16 @@ app.on('activate', () => {
     // dock icon is clicked and there are no other windows open.
     if (win === null) {
         createWindow();
+    }
+});
+
+process.argv.forEach(arg => {
+    if (arg === 'reset') {
+        try {
+            fs.unlinkSync(Path.join(profileDir, 'App.windowBox.json'));
+        }
+        catch (ignore) {
+            
+        }
     }
 });
