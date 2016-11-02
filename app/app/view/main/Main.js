@@ -88,7 +88,7 @@ Ext.define('App.view.main.Main', {
             label: 'File',
             submenu: [{
                 label: 'Reopen',
-                // submenu: 'getReopenMenu'
+                submenu: 'getReopenMenu'
             }, {
                 label: 'Exit',
                 accelerator: 'CmdOrCtrl+Q',

@@ -17,6 +17,8 @@ Ext.define('App.view.main.MainController', function () {
     // We can do simple calls to the main process from here (the render process)
     const foo = remote.require('./main/mainStub.js');
 
+    var reopenList = [];
+    
     return {
         extend: 'Ext.app.ViewController',
 
@@ -48,15 +50,33 @@ Ext.define('App.view.main.MainController', function () {
                     Ext.Msg.alert(`Error reading file ${path}: ${err.message}`);
                 }
                 else {
+                    reopenList.push(path);
+                    if (reopenList.length > 10) {
+                        reopenList.shift();
+                    }
                     vm.set('colors', colors.map(c => {
                         return {
                             hex: c.hex()
                         };
                     }));
                     // change the menu
-                    me.getView().reloadNativeMenu('app');
+                    this.getView().reloadNativeMenu('app');
                 }
             });
+        },
+        
+        getReopenMenu () {
+            var me = this,
+                ret = [];
+            reopenList.forEach(file => {
+                ret.push({
+                    label: file,
+                    click () {
+                        me.onFileChange(null, file);
+                    }
+                });
+            });
+            return ret;
         },
         
         onRefreshMenu () {
