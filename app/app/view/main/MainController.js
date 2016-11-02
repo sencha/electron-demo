@@ -38,7 +38,6 @@ Ext.define('App.view.main.MainController', function () {
             var vm = this.getViewModel();
             var v = foo.foobar(process.type, () => {
                 console.log(`Callback called in ${process.type}`);
-                debugger;
             });
 
             console.log(`v=${v}`);

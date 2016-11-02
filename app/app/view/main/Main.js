@@ -2,8 +2,6 @@
  * This class is the main view for the application. It is specified in app.js as the
  * "mainView" property. That setting automatically applies the "viewport"
  * plugin causing this view to become the body element (i.e., the viewport).
- *
- * TODO - Replace this content of this view to suite the needs of your application.
  */
 Ext.define('App.view.main.Main', {
     extend: 'Ext.tab.Panel',
@@ -81,8 +79,6 @@ Ext.define('App.view.main.Main', {
         }
     },
     
-    // nativeAppMenu: 'app',
-    
     nativeMenus: {
         app: [{
             label: 'File',
@@ -134,7 +130,7 @@ Ext.define('App.view.main.Main', {
         title: 'Home',
         iconCls: 'fa-home',
         // The following grid shares a store with the classic version's grid as well!
-        items: [{
+        tbar: [{
             xtype: 'segmentedbutton',
             allowMultiple: true,
             items: [{
@@ -153,7 +149,9 @@ Ext.define('App.view.main.Main', {
             listeners: {
                 toggle: 'onButtonToggled'
             }
-        },{
+        }],
+
+        items: [{
             xtype: 'mainlist'
         }]
     }, {
