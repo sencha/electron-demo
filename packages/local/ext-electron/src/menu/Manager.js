@@ -119,7 +119,7 @@ Ext.define('Ext.electron.menu.Manager', function () {
 
 return {
     config: {
-        nativeAppMenu: null,
+        nativeAppMenu: 'app',
 
         nativeMenus: null,
 
@@ -157,6 +157,8 @@ return {
 
             if (menu) {
                 menu = me.fixupMenuHandlers(menu);
+                // https://github.com/electron/electron/blob/master/docs/api/menu.md
+                // https://github.com/electron/electron/blob/master/docs/api/menu-item.md
                 menu = Menu.buildFromTemplate(menu);
 
                 if (name === me.getNativeAppMenu()) {
@@ -173,7 +175,12 @@ return {
     },
 
     invalidateNativeMenu (name) {
-        delete this.instances[name];
+        var instances = this.instances;
+
+        if (instances) {
+            delete instances[name];
+        }
+
         return this;
     },
 
