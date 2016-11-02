@@ -1,7 +1,7 @@
 /**
  * This component is similar to the browser file field but uses the native file picker.
  */
-Ext.define('Ext.electron.form.FieldPicker', function () {
+Ext.define('Ext.electron.form.FileField', function () {
     var Path = require('path');
 
 return {
@@ -172,7 +172,7 @@ return {
 
             if (path) {
                 if (suffix) {
-                    path = Studio.core.xfs.join(path, suffix);
+                    path = Path.join(path, suffix);
                 }
 
                 value = me.setLocation(path);

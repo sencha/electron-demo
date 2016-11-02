@@ -9,14 +9,31 @@ return {
 
     singleton: true,
 
+    methods: {
+        open: 'showOpenDialog',
+        save: 'showSaveDialog'
+    },
+
     filePicker: function (options) {
+        options = Ext.apply({
+            type: 'open'
+        }, options);
+
+        var method = this.methods[options.type];
+
+        //<debug>
+        if (!method) {
+            Ext.raise(`Unknown dialog type "${options.type}" (expected "open" or "save")`);
+        }
+        //</debug>
+
         return new Promise(function (resolve) {
             Ext.fireEvent('nativemodalopen', {
                 type: 'filePicker',
                 options: options
             });
 
-            dialog.showOpenDialog(
+            dialog[method](
                 //opens as a sheet in OSX
                 remote.getCurrentWindow(),
                 options,
@@ -29,6 +46,7 @@ return {
                     if (result && !result.length) {
                         result = null;
                     }
+
                     resolve(result);
                 });
         });

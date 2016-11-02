@@ -17,7 +17,7 @@ Ext.define('App.view.main.Main', {
         'App.view.main.MainModel',
         'App.view.main.List',
 
-        'Ext.electron.form.FieldPicker'
+        'Ext.electron.form.FileField'
     ],
 
     controller: 'main',
@@ -90,6 +90,7 @@ Ext.define('App.view.main.Main', {
 
         tbar: [{
             xtype: 'electronfilefield',
+            flex: 2,
             reference: 'filepicker',
             options: {
                 filters: [
@@ -97,12 +98,28 @@ Ext.define('App.view.main.Main', {
                     {name: 'All Files', extensions: ['*']}
                 ]
             },
+            bind: '{filename}',
             listeners: {
                 change: 'onFileChange'
             }
         }, {
-            text: 'SHA-256',
-            handler: 'onHash'
+            xtype: 'component',
+            flex: 5,
+            style: {
+                'font-family': 'monospace'
+            },
+            bind: '{hash}'
+        }],
+
+        items: [{
+            xtype: 'component',
+
+            bind: {
+                data: '{colors}'
+            },
+            tpl: '<tpl for=".">'+
+                    '<div style="background-color: {hex};" class="app-main-color-tile"></div>' +
+                '</tpl>'
         }],
 
         bind: {

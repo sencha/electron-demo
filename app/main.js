@@ -1,4 +1,7 @@
 const { app, BrowserWindow } = require('electron');
+const mainStub = require('./main/mainStub.js');
+
+mainStub.setFoo(42, process.type);
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -19,11 +22,47 @@ function createWindow () {
 
     // Emitted when the window is closed.
     win.on('closed', () => {
+        flushWindowState();
+
         // Dereference the window object, usually you would store windows
         // in an array if your app supports multi windows, this is the time
         // when you should delete the corresponding element.
         win = null;
-    })
+    });
+
+    win.on('move', trackWindow);
+    win.on('resize', trackWindow);
+}
+
+let windowBox;
+let syncTimer;
+
+function flushWindowState () {
+    if (syncTimer) {
+        clearTimeout(syncTimer);
+        syncTimer = null;
+    }
+    //TODO
+}
+
+function trackWindow () {
+    var bounds;
+
+    if (win.isMaximized()) {
+        bounds = { maximized: true };
+    } else {
+        bounds = this.mainWindow.getBounds();
+        bounds.maximized = false;
+    }
+
+    windowBox = bounds;
+
+    if (!syncTimer) {
+        syncTimer = setTimeout(() => {
+            syncTimer = null;
+            flushWindowState();
+        });
+    }
 }
 
 // This method will be called when Electron has finished
