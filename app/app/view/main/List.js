@@ -23,5 +23,10 @@ Ext.define('App.view.main.List', {
 
     listeners: {
         select: 'onItemSelected'
-    }
+    },
+    
+    tools: [{
+        type: 'refresh',
+        handler: 'onRefreshMenu'
+    }]
 });

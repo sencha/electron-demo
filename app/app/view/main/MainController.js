@@ -22,6 +22,10 @@ Ext.define('App.view.main.MainController', function () {
 
         alias: 'controller.main',
 
+        init () {
+            this.getView().reloadNativeMenu('app');  
+        },
+        
         initViewModel (vm) {
             var colorStore = new Ext.data.Store({
                 fields: ['hex']
@@ -49,8 +53,36 @@ Ext.define('App.view.main.MainController', function () {
                             hex: c.hex()
                         };
                     }));
+                    // change the menu
+                    me.getView().reloadNativeMenu('app');
                 }
             });
+        },
+        
+        onRefreshMenu () {
+            var view = this.getView();
+            view.reloadNativeMenu('app');
+        },
+
+        onAppReload: function (item, focusedWindow) {
+            if (focusedWindow) {
+                focusedWindow.reload();
+            }
+        },
+
+        onExit: function() {
+            window.close();
+        },
+        
+        onButtonToggled (btn, button, pressed) {
+            var view = this.getView();
+            if (pressed) {
+                view.addTag(button.text)
+            }
+            else {
+                view.removeTag(button.text);
+            }
+            view.reloadNativeMenu('app');
         }
     };
 });

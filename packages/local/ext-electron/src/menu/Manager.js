@@ -218,12 +218,17 @@ return {
 
         hooks.onCreated = function (a, b, c, d) {
             var me = this,
-                args = Ext.Array.slice(arguments);
+                args = Ext.Array.slice(arguments),
+                cfg = {
+                    nativeAppMenu: nativeAppMenu,
+                    nativeMenus: nativeMenus
+                };
 
-            cls.$config.add({
-                nativeAppMenu: nativeAppMenu,
-                nativeMenus: nativeMenus
-            });
+            if (!nativeAppMenu) {
+                delete cfg.nativeAppMenu
+            }
+                
+            cls.$config.add(cfg);
 
             hooks.onCreated = onCreated;
             hooks.onCreated.call(me, args);
@@ -266,27 +271,23 @@ return {
             }
 
             function intersects (ary1, ary2) {
-                var j, k, intersects = false;
+                var j, k;
 
                 if (!ary2 || !ary2.length) {
                     return true;
                 }
 
-                if (ary1 && ary1.length && ary2 && ary2.length) {
+                if (ary1 && ary1.length) {
                     for (j = 0; j < ary1.length; j++) {
                         for (k = 0; k < ary2.length; k++) {
                             if (ary1[j] === ary2[k]) {
-                                intersects = true;
-                                break;
+                                return true;
                             }
-                        }
-                        if (intersects) {
-                            break;
                         }
                     }
                 }
 
-                return intersects;
+                return false;
             }
 
             function fix (menu) {

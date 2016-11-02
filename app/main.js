@@ -25,7 +25,7 @@ let profileDir = (function () {
             return Path.join(process.env.USERPROFILE, `.${COMPANY_LOWER}`);
 
         case 'darwin':
-            return Path.join(ret, `'Library/Application Support/${COMPANY}`);
+            return Path.join(ret, `Library/Application Support/${COMPANY}`);
 
         case 'linux':
             return Path.join(ret, `.local/share/data/${COMPANY}`);
