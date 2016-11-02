@@ -17,11 +17,17 @@ Ext.define('App.view.main.MainController', function () {
     // We can do simple calls to the main process from here (the render process)
     const foo = remote.require('./main/mainStub.js');
 
+    var reopenList = [];
+    
     return {
         extend: 'Ext.app.ViewController',
 
         alias: 'controller.main',
 
+        init () {
+            this.getView().reloadNativeMenu('app');  
+        },
+        
         initViewModel (vm) {
             var colorStore = new Ext.data.Store({
                 fields: ['hex']
@@ -44,13 +50,59 @@ Ext.define('App.view.main.MainController', function () {
                     Ext.Msg.alert(`Error reading file ${path}: ${err.message}`);
                 }
                 else {
+                    reopenList.push(path);
+                    if (reopenList.length > 10) {
+                        reopenList.shift();
+                    }
                     vm.set('colors', colors.map(c => {
                         return {
                             hex: c.hex()
                         };
                     }));
+                    // change the menu
+                    this.getView().reloadNativeMenu('app');
                 }
             });
+        },
+        
+        getReopenMenu () {
+            var me = this,
+                ret = [];
+            reopenList.forEach(file => {
+                ret.push({
+                    label: file,
+                    click () {
+                        me.onFileChange(null, file);
+                    }
+                });
+            });
+            return ret;
+        },
+        
+        onRefreshMenu () {
+            var view = this.getView();
+            view.reloadNativeMenu('app');
+        },
+
+        onAppReload: function (item, focusedWindow) {
+            if (focusedWindow) {
+                focusedWindow.reload();
+            }
+        },
+
+        onExit: function() {
+            window.close();
+        },
+        
+        onButtonToggled (btn, button, pressed) {
+            var view = this.getView();
+            if (pressed) {
+                view.addTag(button.text)
+            }
+            else {
+                view.removeTag(button.text);
+            }
+            view.reloadNativeMenu('app');
         }
     };
 });

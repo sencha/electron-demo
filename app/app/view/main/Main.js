@@ -19,6 +19,10 @@ Ext.define('App.view.main.Main', {
 
         'Ext.electron.form.FileField'
     ],
+    
+    mixins: [
+        'Ext.electron.menu.Manager'
+    ],
 
     controller: 'main',
     viewModel: 'main',
@@ -76,12 +80,80 @@ Ext.define('App.view.main.Main', {
             }
         }
     },
+    
+    // nativeAppMenu: 'app',
+    
+    nativeMenus: {
+        app: [{
+            label: 'File',
+            submenu: [{
+                label: 'Reopen',
+                submenu: 'getReopenMenu'
+            }, {
+                label: 'Exit',
+                accelerator: 'CmdOrCtrl+Q',
+                click: 'onExit'
+            }]
+        }, {
+            label: 'MainMenu',
+            tags: ['MainMenu'],
+            submenu: [{
+                label: 'TagA TagB',
+                tags: ['TagA', 'TagB']
+            }, {
+                label: 'TagB TagC',
+                tags: ['TagB', 'TagC']
+            }]
+        },{
+            label: 'TagB',
+            tags: ['TagB'],
+            submenu: [{
+                label: 'Item 1'
+            }, {
+                label: 'Item 2'
+            }]
+        },{
+            label: 'TagC',
+            tags: ['TagC'],
+            submenu: [{
+                label: 'Item 1'
+            }, {
+                label: 'Item 2'
+            }]
+        },{
+            label: 'View',
+            submenu: [{
+                label: 'Reload',
+                accelerator: 'CmdOrCtrl+R',
+                click: 'onAppReload'
+            }]
+        }]
+    },
 
     items: [{
         title: 'Home',
         iconCls: 'fa-home',
         // The following grid shares a store with the classic version's grid as well!
         items: [{
+            xtype: 'segmentedbutton',
+            allowMultiple: true,
+            items: [{
+                text: 'MainMenu',
+                pressed: false
+            }, {
+                text: 'TagA',
+                pressed: false
+            }, {
+                text: 'TagB',
+                pressed: false
+            }, {
+                text: 'TagC',
+                pressed: false
+            }],
+            listeners: {
+                toggle: 'onButtonToggled'
+            }
+        },{
             xtype: 'mainlist'
         }]
     }, {
