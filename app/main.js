@@ -7,34 +7,35 @@ const fs = require('fs');
 
 mainStub.setFoo(42, process.type);
 
+const COMPANY = 'Acme';
+const COMPANY_LOWER = COMPANY.toLowerCase();
+const WINDOW_STATE_FILE = 'app-state.json';
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win;
 let windowBox;
 let syncTimer;
 
-
 let profileDir = (function () {
     var ret = os.homedir();
 
     switch (os.platform()) {
         case 'win32':
-            return Path.join(process.env.USERPROFILE, '.sencha');
+            return Path.join(process.env.USERPROFILE, `.${COMPANY_LOWER}`);
 
         case 'darwin':
-            return Path.join(ret, 'Library/Application Support/Sencha');
+            return Path.join(ret, `'Library/Application Support/${COMPANY}`);
 
         case 'linux':
-            return Path.join(ret, '.local/share/data/Sencha');
+            return Path.join(ret, `.local/share/data/${COMPANY}`);
     }
 
-    return Path.join(ret, '.sencha');
+    return Path.join(ret, `.${COMPANY}`);
 })();
 
-
 function createWindow () {
-
-    var initData = readObject('App.windowBox.json');
+    var initData = readObject(WINDOW_STATE_FILE);
     
     // Create the browser window.
     win = new BrowserWindow({
@@ -63,12 +64,14 @@ function createWindow () {
 
     win.on('move', trackWindow);
     win.on('resize', trackWindow);
+
     trackWindow();
 }
 
 function readObject(name) {
     var obj = {};
     var path = Path.join(profileDir, name);
+
     if (fs.existsSync(path)) {
         try {
             var data = fs.readFileSync(path, 'utf8');
@@ -86,9 +89,11 @@ function readObject(name) {
 function saveObject(obj, name) {
     var data = JSON.stringify(obj, null, '  ');
     var path = Path.join(profileDir, name);
+
     if (!fs.existsSync(Path.dirname(path))) {
-        fs.mkdirSync(POath.dirname(path));
+        fs.mkdirSync(Path.dirname(path));
     }
+
     fs.writeFileSync(path, data);
 }
 
@@ -98,20 +103,21 @@ function flushWindowState () {
         clearTimeout(syncTimer);
         syncTimer = null;
     }
-    saveObject(windowBox, 'App.windowBox.json');
+
+    saveObject(windowBox, WINDOW_STATE_FILE);
 }
 
 function trackWindow () {
-    var bounds;
-
     if (win.isMaximized()) {
-        bounds = { maximized: true };
+        if (windowBox) {
+            windowBox.maximized = true;
+        } else {
+            windowBox = { maximized: true };
+        }
     } else {
-        bounds = win.getBounds();
-        bounds.maximized = false;
+        windowBox = win.getBounds();
+        windowBox.maximized = false;
     }
-
-    windowBox = bounds;
 
     if (!syncTimer) {
         syncTimer = setTimeout(() => {
@@ -146,10 +152,10 @@ app.on('activate', () => {
 process.argv.forEach(arg => {
     if (arg === 'reset') {
         try {
-            fs.unlinkSync(Path.join(profileDir, 'App.windowBox.json'));
+            fs.unlinkSync(Path.join(profileDir, WINDOW_STATE_FILE));
         }
         catch (ignore) {
-            
+            // ignore
         }
     }
 });
