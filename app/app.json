@@ -82,7 +82,7 @@
             "enable": true
         },
         "compressor": {
-            "type": "yui"
+            "type": "cmd"
         }
     },
     

@@ -1,4 +1,7 @@
 const { app, BrowserWindow } = require('electron');
+const mainStub = require('./main/mainStub.js');
+
+mainStub.setFoo(42, process.type);
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.

@@ -4,19 +4,53 @@
  *
  * TODO - Replace this content of this view to suite the needs of your application.
  */
-Ext.define('App.view.main.MainController', {
-    extend: 'Ext.app.ViewController',
+Ext.define('App.view.main.MainController', function () {
+    // Since file-scope is global-scope (not module-scope), use a closure to limit
+    // require() vars
 
-    alias: 'controller.main',
+    const getColors = require("get-image-colors");
+    const electron = require('electron');
 
-    onFileChange (picker, path) {
-        console.log(`File is ${path}`);
-    },
+    // See http://electron.atom.io/docs/api/remote/
+    const remote = electron.remote;
 
-    onHash () {
-        let picker = this.lookup('filepicker');
-        let path = picket.getValue();
+    // We can do simple calls to the main process from here (the render process)
+    const foo = remote.require('./main/mainStub.js');
 
-        console.log(`Hash ${path}`);
-    }
+    return {
+        extend: 'Ext.app.ViewController',
+
+        alias: 'controller.main',
+
+        initViewModel (vm) {
+            var colorStore = new Ext.data.Store({
+                fields: ['hex']
+            });
+
+            vm.set('colorStore', this.colorStore = colorStore);
+        },
+
+        onFileChange (picker, path) {
+            var vm = this.getViewModel();
+            var v = foo.foobar(process.type, () => {
+                console.log(`Callback called in ${process.type}`);
+                debugger;
+            });
+
+            console.log(`v=${v}`);
+
+            getColors(path, (err, colors) => {
+                if (err) {
+                    Ext.Msg.alert(`Error reading file ${path}: ${err.message}`);
+                }
+                else {
+                    vm.set('colors', colors.map(c => {
+                        return {
+                            hex: c.hex()
+                        };
+                    }));
+                }
+            });
+        }
+    };
 });
