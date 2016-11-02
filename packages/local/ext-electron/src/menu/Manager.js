@@ -130,14 +130,14 @@ return {
         ]
     },
 
-    addTag: function (tag) {
+    addTag (tag) {
         var me = this;
         if (me.tags.indexOf(tag) == -1) {
             this.tags.push(tag);
         }
     },
 
-    removeTag: function (tag) {
+    removeTag (tag) {
         var me = this,
             i = me.tags.indexOf(tag);
         if (i != -1) {
@@ -145,7 +145,7 @@ return {
         }
     },
 
-    getNativeMenu: function (name, cache) {
+    getNativeMenu (name, cache) {
         var me = this,
             instances = (cache !== false) && (me.instances || (me.instances = {})),
             menu = instances && instances[name],
@@ -172,34 +172,34 @@ return {
         return menu || null;
     },
 
-    invalidateNativeMenu: function (name) {
+    invalidateNativeMenu (name) {
         delete this.instances[name];
         return this;
     },
 
-    reloadNativeMenu: function (name) {
+    reloadNativeMenu (name) {
         return this.invalidateNativeMenu(name).getNativeMenu(name);
     },
 
-    onAppToggleFullScreen: function (item, focusedWindow) {
+    onAppToggleFullScreen (item, focusedWindow) {
         if (focusedWindow) {
             focusedWindow.setFullScreen(!focusedWindow.isFullScreen());
         }
     },
 
-    onAppReload: function (item, focusedWindow) {
+    onAppReload (item, focusedWindow) {
         if (focusedWindow) {
             focusedWindow.reload();
         }
     },
 
-    onAppToggleDevTools: function (item, focusedWindow) {
+    onAppToggleDevTools (item, focusedWindow) {
         if (focusedWindow) {
             focusedWindow.toggleDevTools();
         }
     },
 
-    onClassMixedIn: function (cls) {
+    onClassMixedIn (cls) {
         var hooks = cls._classHooks,
             onCreated = hooks.onCreated,
             proto = cls.prototype,
@@ -224,12 +224,10 @@ return {
     },
 
     privates: {
-        fixupMenuHandlers: function (template) {
+        fixupMenuHandlers (template) {
             var me = this,
                 controller = me.lookupController && me.lookupController(),
                 ret = Ext.clone(template);
-
-
 
             function bind (method) {
                 var owner = me;
@@ -243,10 +241,31 @@ return {
                 };
             }
 
+            function expand (item, prop) {
+                var val = item[prop];
+                var type = typeof val;
+
+                if (type === 'function') {
+                    item[prop] = val.call(me, me.tags);
+                }
+                else if (type === 'string') {
+                    if (controller && controller[val]) {
+                        item[prop] = controller[val](me.tags);
+                    }
+                    else {
+                        item[prop] = me[val](me.tags);
+                    }
+                }
+            }
+
             function intersects (ary1, ary2) {
                 var j, k, intersects = false;
 
-                if (ary1 && ary1.length > 0 && ary2 && ary2.length > 0) {
+                if (!ary2 || !ary2.length) {
+                    return true;
+                }
+
+                if (ary1 && ary1.length && ary2 && ary2.length) {
                     for (j = 0; j < ary1.length; j++) {
                         for (k = 0; k < ary2.length; k++) {
                             if (ary1[j] === ary2[k]) {
@@ -264,56 +283,58 @@ return {
             }
 
             function fix (menu) {
-                var accelerator, i, j, k, fixed, submenu;
-                //intersects, submenu;
+                var accelerator, i, fixed, submenu;
 
                 if (Array.isArray(menu)) {
                     for (i = menu.length; i-- > 0;) {
                         fixed = fix(menu[i]);
 
-                        if (menu[i].tags && menu[i].tags.length > 0) {
-                            // check for tags... the list of tags on the item is an OR list
-                            // if there is an intersection between me.tags and menu.tags then the item is in.
-                            // otherwise it's out.
+                        // check for tags... the list of tags on the item is an OR list
+                        // if there is an intersection between me.tags and menu.tags
+                        // then the item is in. Otherwise it's out.
 
-                            if (!intersects(me.tags, menu[i].tags) && !fixed) {
-                                menu.splice(i, 1);
-                            }
+                        if (!intersects(me.tags, menu[i].tags) && !fixed) {
+                            menu.splice(i, 1);
                         }
                     }
 
                     return menu.length > 0;
                 }
 
-                if (menu.tags && menu.tags.length > 0) {
-                     if (!intersects(me.tags, menu.tags)) {
-                         return false;
-                     }
-                }
+                 if (!intersects(me.tags, menu.tags)) {
+                     return false;
+                 }
 
-                if (menu.shouldEnable && !menu.shouldEnable()) {
-                    return false;
-                }
+                // If these properties contain methods, call them. If they are strings,
+                // call those methods on the controller or me to get the true value.
+                expand(menu, 'checked');
+                expand(menu, 'enabled');
+                expand(menu, 'visible');
+                expand(menu, 'submenu');
+                // if (menu.shouldEnable && !menu.shouldEnable()) {
+                //     return false;
+                // }
 
                 submenu = menu.submenu;
                 if (submenu) {
                     // Idea here is that a submenu of type string indicates a method to call on the controller to
                     // retrieve menu items dynamically. We pass the array of tags so it can be sensitive to them.
-                    if (typeof submenu === 'string') {
-                        if (controller && controller[submenu]) {
-                            submenu = controller[submenu](me.tags);
-                        } else {
-                            submenu = me[submenu](me.tags);
-                        }
-                        if (!submenu) {
-                            return false;
-                        }
-
-                        menu.submenu = submenu;
-                    }
+                    // if (typeof submenu === 'string') {
+                    //     if (controller && controller[submenu]) {
+                    //         submenu = controller[submenu](me.tags);
+                    //     } else {
+                    //         submenu = me[submenu](me.tags);
+                    //     }
+                    //     if (!submenu) {
+                    //         return false;
+                    //     }
+                    //
+                    //     menu.submenu = submenu;
+                    // }
 
                     if (!fix(submenu)) {
-                        return false;
+                        delete menu.submenu;
+                        //return false;
                     }
                 }
 
