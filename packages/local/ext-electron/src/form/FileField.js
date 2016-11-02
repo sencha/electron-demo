@@ -1,5 +1,18 @@
 /**
  * This component is similar to the browser file field but uses the native file picker.
+ *
+ *     Ext.create({
+ *         xtype: 'electronfilefield',
+ *
+ *         // allow the user to only select a file from `baseDir`
+ *         baseDir: 'Macintosh HD/Users/MyName/Documents',
+ *
+ *         listeners: {
+ *             pathselect: function (field, path) {
+ *                 console.log(path);  // logs the path of the selected file
+ *             }
+ *         }
+ *     });
  */
 Ext.define('Ext.electron.form.FileField', function () {
     var Path = require('path');
@@ -48,8 +61,7 @@ return {
 
         /**
          * @cfg {Object} options
-         * The options used for the Electron showOpenDialog method. For more details see
-         * https://github.com/atom/electron/blob/master/docs/api/dialog.md.
+         * The options passed in to {@link Ext.electron.Dialog#method!filePicker} method.
          */
         options: {
             title: 'Select File',
@@ -65,7 +77,7 @@ return {
     triggers: {
         pick: {
             cls: 'x-fa fa-folder-open-o',
-            handler: function (field) {
+            handler (field) {
                 field.showDialog();
             }
         }
@@ -73,7 +85,7 @@ return {
 
     separator: Path.sep,
 
-    resolvePath: function (location) {
+    resolvePath (location) {
         var me = this,
             defaultName = me.defaultName,
             rootDir = me.rootDir,
@@ -130,7 +142,7 @@ return {
         return location;
     },
 
-    setLocation: function (location) {
+    setLocation (location) {
         var me = this,
             value = me.resolvePath(location),
             rootDir = me.rootDir;
@@ -146,7 +158,7 @@ return {
         return value;
     },
 
-    showDialog: function () {
+    showDialog () {
         var me = this,
             options = {},
             value = me.getValue(),
