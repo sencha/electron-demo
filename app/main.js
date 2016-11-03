@@ -5,33 +5,33 @@ const Path = require('path');
 const os = require('os');
 const fs = require('fs');
 
-mainStub.setFoo(42, process.type);
-
-const COMPANY = 'Acme';
-const COMPANY_LOWER = COMPANY.toLowerCase();
-const WINDOW_STATE_FILE = 'app-state.json';
-
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win;
 let windowBox;
 let syncTimer;
 
-let profileDir = (function () {
+// Each platform has a policy for where user settings and such are stored. This
+// value is the base directory for any such files.
+const COMPANY = 'Acme';
+const COMPANY_LOWER = COMPANY.toLowerCase();
+const WINDOW_STATE_FILE = 'app-state.json';
+
+const profileDir = (function () {
     var ret = os.homedir();
 
     switch (os.platform()) {
         case 'win32':
-            return Path.join(process.env.USERPROFILE, `.${COMPANY_LOWER}`);
+            return Path.join(process.env.APPDATA, `${COMPANY}`);
 
         case 'darwin':
             return Path.join(ret, `Library/Application Support/${COMPANY}`);
 
         case 'linux':
-            return Path.join(ret, `.local/share/data/${COMPANY}`);
+            return Path.join(ret, `.local/share/data/${COMPANY_LOWER}`);
     }
 
-    return Path.join(ret, `.${COMPANY}`);
+    return Path.join(ret, `.${COMPANY_LOWER}`);
 })();
 
 function createWindow () {
@@ -54,6 +54,7 @@ function createWindow () {
 
     // Emitted when the window is closed.
     win.on('closed', () => {
+        // Ensure we save the window state before we exit.
         flushWindowState();
 
         // Dereference the window object, usually you would store windows
@@ -62,41 +63,13 @@ function createWindow () {
         win = null;
     });
 
+    // Watch the BrowserWindow movement and resizing and store current
+    // position in a settings file.
     win.on('move', trackWindow);
     win.on('resize', trackWindow);
 
     trackWindow();
 }
-
-function readObject(name) {
-    var obj = {};
-    var path = Path.join(profileDir, name);
-
-    if (fs.existsSync(path)) {
-        try {
-            var data = fs.readFileSync(path, 'utf8');
-            if (data) {
-                obj = JSON.parse(data);
-            }
-        }
-        catch (ignore) {
-            
-        }
-    }
-    return obj;
-}
-
-function saveObject(obj, name) {
-    var data = JSON.stringify(obj, null, '  ');
-    var path = Path.join(profileDir, name);
-
-    if (!fs.existsSync(Path.dirname(path))) {
-        fs.mkdirSync(Path.dirname(path));
-    }
-
-    fs.writeFileSync(path, data);
-}
-
 
 function flushWindowState () {
     if (syncTimer) {
@@ -104,7 +77,7 @@ function flushWindowState () {
         syncTimer = null;
     }
 
-    saveObject(windowBox, WINDOW_STATE_FILE);
+    writeObject(windowBox, WINDOW_STATE_FILE);
 }
 
 function trackWindow () {
@@ -119,11 +92,12 @@ function trackWindow () {
         windowBox.maximized = false;
     }
 
+    // Only flush the window size/position to disk every 500ms or so.
     if (!syncTimer) {
         syncTimer = setTimeout(() => {
             syncTimer = null;
             flushWindowState();
-        }, 250);
+        }, 500);
     }
 }
 
@@ -159,3 +133,38 @@ process.argv.forEach(arg => {
         }
     }
 });
+
+// Initialize the mainStub module with info from this (the "browser"
+// or "main") process. This module will be used to demonstrate IPC
+// using the "remote" module and receive calls from the "render"
+// process.
+mainStub.setup(42, process.type);
+
+function readObject (name) {
+    var obj = {};
+    var path = Path.join(profileDir, name);
+
+    if (fs.existsSync(path)) {
+        try {
+            var data = fs.readFileSync(path, 'utf8');
+            if (data) {
+                obj = JSON.parse(data);
+            }
+        }
+        catch (ignore) {
+
+        }
+    }
+    return obj;
+}
+
+function writeObject (obj, name) {
+    var data = JSON.stringify(obj, null, '  ');
+    var path = Path.join(profileDir, name);
+
+    if (!fs.existsSync(Path.dirname(path))) {
+        fs.mkdirSync(Path.dirname(path));
+    }
+
+    fs.writeFileSync(path, data);
+}

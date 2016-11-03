@@ -78,7 +78,7 @@ Ext.define('App.view.main.Main', {
             }
         }
     },
-    
+
     nativeMenus: {
         app: [{
             label: 'File',
@@ -131,6 +131,9 @@ Ext.define('App.view.main.Main', {
         iconCls: 'fa-home',
         // The following grid shares a store with the classic version's grid as well!
         tbar: [{
+            xtype: 'component',
+            html: 'Menu filter: '
+        },{
             xtype: 'segmentedbutton',
             allowMultiple: true,
             items: [{

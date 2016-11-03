@@ -12,94 +12,106 @@ Ext.define('App.view.main.MainController', function () {
     // See http://electron.atom.io/docs/api/remote/
     const remote = electron.remote;
 
-    // We can do simple calls to the main process from here (the render process)
-    const foo = remote.require('./main/mainStub.js');
+    // An easy way to make calls to the main process from here (the render process):
+    const mainStub = remote.require('./main/mainStub.js');
 
-    var reopenList = [];
-    
     return {
         extend: 'Ext.app.ViewController',
 
         alias: 'controller.main',
 
         init () {
-            this.getView().reloadNativeMenu('app');  
-        },
-        
-        initViewModel (vm) {
-            var colorStore = new Ext.data.Store({
-                fields: ['hex']
-            });
+            this.recentFiles = [];
 
-            vm.set('colorStore', this.colorStore = colorStore);
+            this.getView().reloadNativeMenu('app');  
         },
 
         onFileChange (picker, path) {
-            var vm = this.getViewModel();
-            var v = foo.foobar(process.type, () => {
-                console.log(`Callback called in ${process.type}`);
-            });
-
-            console.log(`v=${v}`);
+            var me = this,
+                vm = this.getViewModel(),
+                recentFiles = me.recentFiles;
 
             getColors(path, (err, colors) => {
                 if (err) {
-                    Ext.Msg.alert(`Error reading file ${path}: ${err.message}`);
+                    //Ext.Msg.alert(`Error reading file ${path}: ${err.message}`);
                 }
                 else {
-                    reopenList.push(path);
-                    if (reopenList.length > 10) {
-                        reopenList.shift();
-                    }
                     vm.set('colors', colors.map(c => {
                         return {
                             hex: c.hex()
                         };
                     }));
+
+                    let i = recentFiles.indexOf(path);
+                    if (i > -1) {
+                        recentFiles.splice(i, 1);
+                    }
+
+                    recentFiles.push(path);
+                    if (recentFiles.length > 3) {
+                        recentFiles.shift();
+                    }
+
                     // change the menu
-                    this.getView().reloadNativeMenu('app');
+                    me.getView().reloadNativeMenu('app');
                 }
             });
+
+            me.testRemote();
         },
         
         getReopenMenu () {
-            var me = this,
-                ret = [];
-            reopenList.forEach(file => {
-                ret.push({
+            var vm = this.getViewModel();
+
+            return this.recentFiles.map(file => {
+                return {
                     label: file,
                     click () {
-                        me.onFileChange(null, file);
+                        vm.set('filename', file);
                     }
-                });
+                };
             });
-            return ret;
         },
         
         onRefreshMenu () {
             var view = this.getView();
+
             view.reloadNativeMenu('app');
         },
 
-        onAppReload: function (item, focusedWindow) {
+        onAppReload (item, focusedWindow) {
             if (focusedWindow) {
                 focusedWindow.reload();
             }
         },
 
-        onExit: function() {
+        onExit () {
             window.close();
         },
         
         onButtonToggled (btn, button, pressed) {
             var view = this.getView();
+
             if (pressed) {
                 view.addTag(button.text)
             }
             else {
                 view.removeTag(button.text);
             }
+
             view.reloadNativeMenu('app');
+        },
+
+        testRemote () {
+            // This code demonstrates how we can *synchronously* invoke methods in
+            // modules back in the main process. It also shows how callbacks can be
+            // passed in and later called by the main process.
+            //
+            var v = mainStub.invoke(process.type, () => {
+                console.log(`Callback called in ${process.type}`);
+            });
+
+            console.log(`Value from remote call to mainStub.invoke: ${v}`);
         }
     };
 });

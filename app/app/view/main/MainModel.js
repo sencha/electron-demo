@@ -33,12 +33,17 @@ Ext.define('App.view.main.MainModel', function () {
                     return '';
                 }
 
-                let file = fs.readFileSync(path);
-                let hasher = sha('sha256');
+                try {
+                    let file = fs.readFileSync(path);
+                    let hasher = sha('sha256');
 
-                let hash = hasher.update(file).digest('hex');
+                    let hash = hasher.update(file).digest('hex');
 
-                return hash;
+                    return hash;
+                }
+                catch (e) {
+                    return '';
+                }
             }
         }
     }
