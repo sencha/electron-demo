@@ -1,4 +1,4 @@
-# ext-electron
+# electron-demo
 
 Ext JS / Electron Helpers and Example App
 
