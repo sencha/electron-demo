@@ -21,8 +21,11 @@ You will now have a `"sencha-frameworks/ext-6.2.0"` directory.
 
 ### Run The `setup` Script
 
-To reinitialize the Sencha Cmd workspace and application, run this command
-at the root directory:
+If you are on Mac OS X or Linux, run this command first (at the root directory):
+
+    $ chmod +x ./setup
+
+Now to reinitialize the Sencha Cmd workspace and application, run this command:
 
     $ ./setup ~/sencha-frameworks
 
