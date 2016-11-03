@@ -102,6 +102,19 @@ Ext.define('App.view.main.MainController', function () {
             view.reloadNativeMenu('app');
         },
 
+        onToggleMenuItem () {
+            var menu = this.getView().getNativeMenu('app');
+            var item = menu.get('bsub');
+
+            if (item) {
+                item.checked = !item.checked;
+            }
+            else {
+                Ext.Msg.alert('The TagB menuItem is not currently in the menu',
+                    'Cannot Toggle');
+            }
+        },
+
         testRemote () {
             // This code demonstrates how we can *synchronously* invoke methods in
             // modules back in the main process. It also shows how callbacks can be

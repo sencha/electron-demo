@@ -84,6 +84,7 @@ Ext.define('App.view.main.Main', {
             label: 'File',
             submenu: [{
                 label: 'Reopen',
+                id: 'reopen',
                 submenu: 'getReopenMenu'
             }, {
                 label: 'Exit',
@@ -92,19 +93,23 @@ Ext.define('App.view.main.Main', {
             }]
         }, {
             label: 'MainMenu',
+            id: 'main',
             tags: ['MainMenu'],
             submenu: [{
                 label: 'TagA TagB',
                 tags: ['TagA', 'TagB']
             }, {
                 label: 'TagB TagC',
+                id: 'mainsub',
                 tags: ['TagB', 'TagC']
             }]
         },{
             label: 'TagB',
             tags: ['TagB'],
             submenu: [{
-                label: 'Item 1'
+                label: 'Item 1',
+                type: 'checkbox',
+                id: 'bsub'
             }, {
                 label: 'Item 2'
             }]
@@ -120,6 +125,7 @@ Ext.define('App.view.main.Main', {
             label: 'View',
             submenu: [{
                 label: 'Reload',
+                id: 'reload',
                 accelerator: 'CmdOrCtrl+R',
                 click: 'onAppReload'
             }]
@@ -152,6 +158,9 @@ Ext.define('App.view.main.Main', {
             listeners: {
                 toggle: 'onButtonToggled'
             }
+        }, '->', {
+            text: 'Toggle TagB MenuItem',
+            handler: 'onToggleMenuItem'
         }],
 
         items: [{
@@ -162,6 +171,9 @@ Ext.define('App.view.main.Main', {
         iconCls: 'fa-user',
 
         tbar: [{
+            xtype: 'component',
+            html: 'Selected file: '
+        },{
             xtype: 'electronfilefield',
             flex: 2,
             reference: 'filepicker',

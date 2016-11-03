@@ -62,6 +62,10 @@ Ext.define('Ext.electron.menu.Manager', function () {
     var Menu = remote.Menu;
 
 return {
+    requires: [
+        'Ext.electron.menu.Menu'
+    ],
+
     config: {
         /**
          * @cfg {Object} nativeMenus
@@ -258,8 +262,8 @@ return {
      * @param {Boolean} [cache=true] Pass `false` to build a new Electron menu instance
      * instead of fetching the existing menu instance (if it exists).
      *
-     * @return {Menu} The loaded [Electron menu](http://electron.atom.io/docs/api/menu/)
-     * or null if a menu was not able to be loaded using the passed `name`.
+     * @return {Ext.electron.menu.Menu} The menu or `null` if a menu was not able to be
+     * loaded using the passed `name`.
      */
     getNativeMenu (name, cache) {
         var me = this,
@@ -282,6 +286,8 @@ return {
                     Menu.setApplicationMenu(menu);
                 }
 
+                menu = new Ext.electron.menu.Menu(name, menu);
+
                 if (instances) {
                     instances[name] = menu;
                 }
@@ -292,10 +298,12 @@ return {
     },
 
     invalidateNativeMenu (name) {
-        var instances = this.instances;
+        var instances = this.instances,
+            menu = instances && instances[name];
 
-        if (instances) {
+        if (menu) {
             delete instances[name];
+            menu.destroy();
         }
 
         return this;
