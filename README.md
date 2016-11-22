@@ -2,6 +2,11 @@
 
 Ext JS / Electron Helpers and Example App
 
+## Prerequisites
+
+* Node JS
+* Yarn
+
 ## Setup
 
 Complete the following steps to get the workspace fully initialized.
