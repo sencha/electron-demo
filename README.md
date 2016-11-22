@@ -4,7 +4,7 @@ Ext JS / Electron Helpers and Example App
 
 ## Prerequisites
 
-* Node JS
+* NodeJS
 * Yarn
 
 ## Setup
