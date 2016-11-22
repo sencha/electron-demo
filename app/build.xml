@@ -38,5 +38,12 @@
             <target name="-before-build"/>
             <target name="-after-build"/>
     -->
+    
+     <copy todir="${build.dir}" overwrite="true">
+      <fileset dir="${basedir}">
+        <include name="main.js" />
+        <include name="package.json" />
+      </fileset>
+    </copy>
 
 </project>
