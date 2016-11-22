@@ -41,6 +41,7 @@
     
      <copy todir="${build.dir}" overwrite="true">
       <fileset dir="${basedir}">
+        <include name="main/mainStub.js" />
         <include name="main.js" />
         <include name="package.json" />
       </fileset>
