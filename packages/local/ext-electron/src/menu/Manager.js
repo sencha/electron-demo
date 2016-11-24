@@ -57,15 +57,17 @@
  *         }
  *     });
  */
+
+if(window && window.process) {
 Ext.define('Ext.electron.menu.Manager', function () {
-    if(window && window.process) {
-        
+    
     var remote = require('electron').remote;
     var Menu = remote.Menu;
 
 return {
     requires: [
-        'Ext.electron.menu.Menu'
+        'Ext.electron.menu.Menu',
+        'Ext.electron.form.FileField'
     ],
 
     config: {
@@ -365,26 +367,28 @@ return {
     },
 
     onClassMixedIn (cls) {
-        var hooks = cls._classHooks,
+        var hooks = cls._classHooks;
+        if(hooks){
             onCreated = hooks.onCreated,
             proto = cls.prototype,
             nativeMenus = proto.nativeMenus;
+        
+            // Our configs get lost as we are mixed in, so restore them from the
+            // target class...
 
-        // Our configs get lost as we are mixed in, so restore them from the
-        // target class...
+            hooks.onCreated = function (...args) {
+                var me = this;
 
-        hooks.onCreated = function (...args) {
-            var me = this;
+                if (nativeMenus) {
+                    cls.$config.add({
+                        nativeMenus: nativeMenus
+                    });
+                }
 
-            if (nativeMenus) {
-                cls.$config.add({
-                    nativeMenus: nativeMenus
-                });
-            }
-
-            hooks.onCreated = onCreated;
-            hooks.onCreated.call(me, args);
-        };
+                hooks.onCreated = onCreated;
+                hooks.onCreated.call(me, args);
+            };
+        }
     },
 
     privates: {
@@ -406,6 +410,7 @@ return {
             }
 
             function expand (item, prop) {
+                
                 var val = item[prop];
                 var type = typeof val;
 
@@ -513,14 +518,11 @@ return {
             return ret;
         }
     }
-} else {
-     return {
-        requires: [
-            'Ext.Class'
-        ]
-     }
  }
 });
+} else {
+    Ext.define('Ext.electron.menu.Manager', {});
+}
 /*
 The default template:
 
