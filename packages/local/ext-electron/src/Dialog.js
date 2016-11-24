@@ -44,6 +44,7 @@
  *     });
  */
 Ext.define('Ext.electron.Dialog', function () {
+ if(window && window.process) {
     var remote = require('electron').remote;
     var dialog = remote.dialog;
 
@@ -236,4 +237,12 @@ return {
                 });
         });
     }
-}});
+} else {
+     return {
+        requires: [
+            'Ext.Class'
+        ]
+     }
+ }
+
+ });
