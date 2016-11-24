@@ -15,6 +15,7 @@
  *     });
  */
 Ext.define('Ext.electron.form.FileField', function () {
+    if(window && window.process) {
     var Path = require('path');
 
 return {
@@ -194,4 +195,12 @@ return {
             }
         });
     }
-}});
+}
+} else {
+     return {
+        requires: [
+            'Ext.Class'
+        ]
+     }
+ }
+});
