@@ -14,16 +14,22 @@
  *         }
  *     });
  */
-Ext.define('Ext.electron.form.FolderField', {
-    extend: 'Ext.electron.form.FileField',
+if(window && window.process) {
+Ext.define('Ext.electron.form.FolderField',  {}, function () {
+        return {
+            extend: 'Ext.electron.form.FileField',
 
-    xtype: 'electronfolderfield',
+            xtype: 'electronfolderfield',
 
-    options: {
-        title: 'Select Folder',
+            options: {
+                title: 'Select Folder',
 
-        properties: [
-            'openDirectory'
-        ]
-    }
+                properties: [
+                    'openDirectory'
+                ]
+            }
+        }
 });
+} else {
+Ext.define('Ext.electron.form.FolderField',  {});
+}
