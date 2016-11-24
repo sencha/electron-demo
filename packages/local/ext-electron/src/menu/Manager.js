@@ -58,6 +58,8 @@
  *     });
  */
 Ext.define('Ext.electron.menu.Manager', function () {
+    if(window && window.process) {
+        
     var remote = require('electron').remote;
     var Menu = remote.Menu;
 
@@ -511,7 +513,14 @@ return {
             return ret;
         }
     }
-}});
+} else {
+     return {
+        requires: [
+            'Ext.Class'
+        ]
+     }
+ }
+});
 /*
 The default template:
 
